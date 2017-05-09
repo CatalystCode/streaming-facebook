@@ -16,9 +16,11 @@ libraryDependencies ++= Seq(
   "org.apache.spark" % "spark-streaming_2.11" % "2.1.0" % "provided",
 
   // testing
-  "org.scalatest" %% "scalatest" % "2.2.1" % "test"
+  "org.scalatest" %% "scalatest" % "2.2.1" % "test",
 
   // dependencies
+  "log4j" % "log4j" % "1.2.17",
+  "org.facebook4j" % "facebook4j-core" % "2.4.9"
 )
 
 assemblyMergeStrategy in assembly := {
