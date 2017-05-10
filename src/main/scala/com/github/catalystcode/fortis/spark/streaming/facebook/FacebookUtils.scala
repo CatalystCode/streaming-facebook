@@ -14,6 +14,7 @@ object FacebookUtils {
     ssc: StreamingContext,
     auth: FacebookAuth,
     pageId: String,
+    fields: Set[String] = Set("message", "place", "caption", "from", "name", "comments"),
     pollingSchedule: PollingSchedule = PollingSchedule(30, TimeUnit.SECONDS),
     pollingWorkers: Int = 1,
     storageLevel: StorageLevel = StorageLevel.MEMORY_ONLY
@@ -22,7 +23,8 @@ object FacebookUtils {
       ssc = ssc,
       client = new FacebookPageClient(
         pageId = pageId,
-        auth = auth),
+        auth = auth,
+        fields = fields),
       pollingSchedule = pollingSchedule,
       pollingWorkers = pollingWorkers,
       storageLevel = storageLevel)
