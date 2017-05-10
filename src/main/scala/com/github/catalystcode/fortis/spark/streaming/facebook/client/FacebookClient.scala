@@ -21,11 +21,16 @@ extends Serializable with Logger {
   def loadNewFacebooks(after: Option[Date] = None): Iterable[Post] = {
     val allPosts = new util.ArrayList[Post]()
 
-    var posts = fetchFacebookResponse(after.getOrElse(defaultLookback))
-    while (posts != null && posts.getPaging != null) {
-      allPosts.addAll(posts)
-      logDebug(s"Got another page: ${Option(posts.getPaging.getNext).getOrElse("no")}")
-      posts = facebook.fetchNext(posts.getPaging)
+    try {
+      var posts = fetchFacebookResponse(after.getOrElse(defaultLookback))
+      while (posts != null && posts.getPaging != null) {
+        allPosts.addAll(posts)
+        logDebug(s"Got another page: ${Option(posts.getPaging.getNext).getOrElse("no")}")
+        posts = facebook.fetchNext(posts.getPaging)
+      }
+    } catch {
+      case fbex: FacebookException =>
+        logError("Problem fetching response from Facebook", fbex)
     }
 
     allPosts.asScala
