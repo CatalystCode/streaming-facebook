@@ -18,7 +18,7 @@ abstract class FacebookClient(
 extends Serializable with Logger {
 
   @transient protected lazy val facebook: Facebook = createFacebook()
-  @transient private lazy val defaultLookback = new Date(new Date().getTime - 1 * 604800000 /* one week ago */)
+  @transient private lazy val defaultLookback = new Date(new Date().getTime - 2 * 3600000 /* two hours */)
   @transient private lazy val defaultFields = Set("permalink_url", "created_time")
 
   def loadNewFacebooks(after: Option[Date] = None): Iterable[FacebookPost] = {
@@ -67,6 +67,7 @@ extends Serializable with Logger {
   }
 
   protected def createReading(after: Date): Reading = {
+    // todo: reduce limit if we got a too-large-request error
     new Reading().since(after).fields((defaultFields ++ fields).toArray : _*).limit(100)
   }
 
