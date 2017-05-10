@@ -28,7 +28,7 @@ Facebook doesn't expose a firehose API so we resort to polling. The FacebookRece
 seconds and pushes any new posts into Spark Streaming for further processing.
 
 Currently, the following ways to read images are supported:
-- by page ([sample data](https://www.facebook.com/pg/MicrosoftCanada/posts/))
+- by page ([sample data](https://www.facebook.com/pg/aljazeera/posts/))
 
 ## Release process ##
 
