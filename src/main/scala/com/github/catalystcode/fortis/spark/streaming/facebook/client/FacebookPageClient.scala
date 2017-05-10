@@ -7,6 +7,8 @@ import facebook4j.{Post, Reading, ResponseList}
 class FacebookPageClient(pageId: String, auth: FacebookAuth) extends FacebookClient(auth) {
   override def fetchFacebookResponse(after: Date): ResponseList[Post] = {
     logDebug(s"Fetching posts for $pageId since $after")
-    facebook.getPosts(pageId, new Reading().since(after))
+    facebook.getPosts(pageId, new Reading()
+      .since(after)
+      .fields("permalink_url", "message", "created_time"))
   }
 }

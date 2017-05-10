@@ -23,18 +23,22 @@ private class FacebookReceiver(
     client
       .loadNewFacebooks(lastIngestedDate)
       .filter(x => {
-        logDebug(s"Got facebook ${x.getLink} from time ${x.getCreatedTime}")
-        lastIngestedDate.isDefined && x.getCreatedTime.after(lastIngestedDate.get)
+        logDebug(s"Got facebook ${x.getPermalinkUrl} from time ${x.getCreatedTime}")
+        isNew(x)
       })
       .foreach(x => {
-        logInfo(s"Storing facebook ${x.getLink}")
+        logInfo(s"Storing facebook ${x.getPermalinkUrl}")
         store(x)
         markStored(x)
       })
   }
 
+  private def isNew(item: Post) = {
+    lastIngestedDate.isEmpty || item.getCreatedTime.after(lastIngestedDate.get)
+  }
+
   private def markStored(item: Post): Unit = {
-    if (lastIngestedDate.isEmpty || item.getCreatedTime.after(lastIngestedDate.get)) {
+    if (isNew(item)) {
       lastIngestedDate = Some(item.getCreatedTime)
       logDebug(s"Updating last ingested date to ${item.getCreatedTime}")
     }

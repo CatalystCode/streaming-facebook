@@ -4,7 +4,7 @@ import java.util
 import java.util.Date
 
 import com.github.catalystcode.fortis.spark.streaming.facebook.{FacebookAuth, Logger}
-import facebook4j.{Facebook, FacebookFactory, Post, ResponseList}
+import facebook4j.{Facebook, FacebookException, FacebookFactory, Post, ResponseList}
 import facebook4j.auth.AccessToken
 
 import collection.JavaConverters._
