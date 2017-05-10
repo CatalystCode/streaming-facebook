@@ -4,7 +4,7 @@ import java.util.concurrent.TimeUnit
 
 import com.github.catalystcode.fortis.spark.streaming.PollingSchedule
 import com.github.catalystcode.fortis.spark.streaming.facebook.client.FacebookPageClient
-import facebook4j.Post
+import com.github.catalystcode.fortis.spark.streaming.facebook.dto.FacebookPost
 import org.apache.spark.storage.StorageLevel
 import org.apache.spark.streaming.StreamingContext
 import org.apache.spark.streaming.dstream.ReceiverInputDStream
@@ -17,7 +17,7 @@ object FacebookUtils {
     pollingSchedule: PollingSchedule = PollingSchedule(30, TimeUnit.SECONDS),
     pollingWorkers: Int = 1,
     storageLevel: StorageLevel = StorageLevel.MEMORY_ONLY
-  ): ReceiverInputDStream[Post] = {
+  ): ReceiverInputDStream[FacebookPost] = {
     new FacebookInputDStream(
       ssc = ssc,
       client = new FacebookPageClient(

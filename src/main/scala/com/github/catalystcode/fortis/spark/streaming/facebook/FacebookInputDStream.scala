@@ -3,8 +3,8 @@ package com.github.catalystcode.fortis.spark.streaming.facebook
 import java.util.Date
 
 import com.github.catalystcode.fortis.spark.streaming.facebook.client.FacebookClient
+import com.github.catalystcode.fortis.spark.streaming.facebook.dto.FacebookPost
 import com.github.catalystcode.fortis.spark.streaming.{PollingReceiver, PollingSchedule}
-import facebook4j.Post
 import org.apache.spark.storage.StorageLevel
 import org.apache.spark.streaming.StreamingContext
 import org.apache.spark.streaming.dstream.ReceiverInputDStream
@@ -15,7 +15,7 @@ private class FacebookReceiver(
   pollingSchedule: PollingSchedule,
   storageLevel: StorageLevel,
   pollingWorkers: Int
-) extends PollingReceiver[Post](pollingSchedule, pollingWorkers, storageLevel) with Logger {
+) extends PollingReceiver[FacebookPost](pollingSchedule, pollingWorkers, storageLevel) with Logger {
 
   @volatile private var lastIngestedDate: Option[Date] = None
 
@@ -23,24 +23,24 @@ private class FacebookReceiver(
     client
       .loadNewFacebooks(lastIngestedDate)
       .filter(x => {
-        logDebug(s"Got facebook ${x.getPermalinkUrl} from time ${x.getCreatedTime}")
+        logDebug(s"Got facebook ${x.post.getPermalinkUrl} from time ${x.post.getCreatedTime} with ${x.comments.size} comments")
         isNew(x)
       })
       .foreach(x => {
-        logInfo(s"Storing facebook ${x.getPermalinkUrl}")
+        logInfo(s"Storing facebook ${x.post.getPermalinkUrl}")
         store(x)
         markStored(x)
       })
   }
 
-  private def isNew(item: Post) = {
-    lastIngestedDate.isEmpty || item.getCreatedTime.after(lastIngestedDate.get)
+  private def isNew(item: FacebookPost) = {
+    lastIngestedDate.isEmpty || item.post.getCreatedTime.after(lastIngestedDate.get)
   }
 
-  private def markStored(item: Post): Unit = {
+  private def markStored(item: FacebookPost): Unit = {
     if (isNew(item)) {
-      lastIngestedDate = Some(item.getCreatedTime)
-      logDebug(s"Updating last ingested date to ${item.getCreatedTime}")
+      lastIngestedDate = Some(item.post.getCreatedTime)
+      logDebug(s"Updating last ingested date to ${item.post.getCreatedTime}")
     }
   }
 }
@@ -51,9 +51,9 @@ class FacebookInputDStream(
   pollingSchedule: PollingSchedule,
   pollingWorkers: Int,
   storageLevel: StorageLevel
-) extends ReceiverInputDStream[Post](ssc) {
+) extends ReceiverInputDStream[FacebookPost](ssc) {
 
-  override def getReceiver(): Receiver[Post] = {
+  override def getReceiver(): Receiver[FacebookPost] = {
     logDebug("Creating facebook receiver")
     new FacebookReceiver(client, pollingSchedule, storageLevel, pollingWorkers)
   }

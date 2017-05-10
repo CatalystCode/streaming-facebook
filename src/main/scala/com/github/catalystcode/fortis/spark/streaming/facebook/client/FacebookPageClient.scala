@@ -7,7 +7,7 @@ import facebook4j.{Post, ResponseList}
 class FacebookPageClient(
   pageId: String,
   auth: FacebookAuth,
-  fields: Set[String] = Set("permalink_url", "message", "created_time"))
+  fields: Set[String] = Set("permalink_url", "message", "created_time", "comments"))
 extends FacebookClient(auth, fields) {
 
   override def fetchFacebookResponse(after: Date): ResponseList[Post] = {
