@@ -66,7 +66,7 @@ extends Serializable with Logger {
   }
 
   protected def createReading(after: Date): Reading = {
-    new Reading().since(after).fields(fields.toArray : _*)
+    new Reading().since(after).fields(fields.toArray : _*).limit(100)
   }
 
   protected def fetchFacebookResponse(after: Date): ResponseList[Post]
