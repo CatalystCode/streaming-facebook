@@ -4,13 +4,16 @@ import java.util
 import java.util.Date
 
 import com.github.catalystcode.fortis.spark.streaming.facebook.{FacebookAuth, Logger}
-import facebook4j.{Facebook, FacebookException, FacebookFactory, Post, ResponseList}
+import facebook4j.{Facebook, FacebookException, FacebookFactory, Post, Reading, ResponseList}
 import facebook4j.auth.AccessToken
 
 import collection.JavaConverters._
 
 @SerialVersionUID(100L)
-abstract class FacebookClient(auth: FacebookAuth) extends Serializable with Logger {
+abstract class FacebookClient(
+  auth: FacebookAuth,
+  fields: Set[String])
+extends Serializable with Logger {
 
   @transient protected lazy val facebook: Facebook = createFacebook()
   @transient private lazy val defaultLookback = new Date(new Date().getTime - 1 * 604800000 /* one week ago */)
@@ -33,6 +36,10 @@ abstract class FacebookClient(auth: FacebookAuth) extends Serializable with Logg
     facebook.setOAuthAppId(auth.appId, auth.appSecret)
     facebook.setOAuthAccessToken(new AccessToken(auth.accessToken, null))
     facebook
+  }
+
+  protected def createReading(after: Date): Reading = {
+    new Reading().since(after).fields(fields.toArray : _*)
   }
 
   protected def fetchFacebookResponse(after: Date): ResponseList[Post]
