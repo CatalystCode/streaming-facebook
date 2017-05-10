@@ -19,6 +19,7 @@ extends Serializable with Logger {
 
   @transient protected lazy val facebook: Facebook = createFacebook()
   @transient private lazy val defaultLookback = new Date(new Date().getTime - 1 * 604800000 /* one week ago */)
+  @transient private lazy val defaultFields = Set("permalink_url", "created_time")
 
   def loadNewFacebooks(after: Option[Date] = None): Iterable[FacebookPost] = {
     val allPosts = ListBuffer[FacebookPost]()
@@ -66,7 +67,7 @@ extends Serializable with Logger {
   }
 
   protected def createReading(after: Date): Reading = {
-    new Reading().since(after).fields(fields.toArray : _*).limit(100)
+    new Reading().since(after).fields((defaultFields ++ fields).toArray : _*).limit(100)
   }
 
   protected def fetchFacebookResponse(after: Date): ResponseList[Post]
