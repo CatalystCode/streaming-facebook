@@ -2,7 +2,7 @@ package com.github.catalystcode.fortis.spark.streaming.facebook
 
 import java.util.Date
 
-import com.github.catalystcode.fortis.spark.streaming.facebook.client.FacebookClient
+import com.github.catalystcode.fortis.spark.streaming.facebook.client.FacebookPageClient
 import com.github.catalystcode.fortis.spark.streaming.facebook.dto.FacebookPost
 import com.github.catalystcode.fortis.spark.streaming.{PollingReceiver, PollingSchedule}
 import org.apache.spark.storage.StorageLevel
@@ -11,7 +11,7 @@ import org.apache.spark.streaming.dstream.ReceiverInputDStream
 import org.apache.spark.streaming.receiver.Receiver
 
 private class FacebookReceiver(
-  client: FacebookClient,
+  clients: Set[FacebookPageClient],
   pollingSchedule: PollingSchedule,
   storageLevel: StorageLevel,
   pollingWorkers: Int
@@ -20,10 +20,10 @@ private class FacebookReceiver(
   @volatile private var lastIngestedDate: Option[Date] = None
 
   override protected def poll(): Unit = {
-    client
+    clients.foreach(_
       .loadNewFacebooks(lastIngestedDate)
       .filter(x => {
-        logDebug(s"Got facebook ${x.post.getPermalinkUrl} from time ${x.post.getCreatedTime} with ${x.comments.size} comments")
+        logDebug(s"Got facebook ${x.post.getPermalinkUrl} from page ${x.pageId} time ${x.post.getCreatedTime} with ${x.comments.size} comments")
         isNew(x)
       })
       .foreach(x => {
@@ -31,6 +31,7 @@ private class FacebookReceiver(
         store(x)
         markStored(x)
       })
+    )
   }
 
   private def isNew(item: FacebookPost) = {
@@ -47,7 +48,7 @@ private class FacebookReceiver(
 
 class FacebookInputDStream(
   ssc: StreamingContext,
-  client: FacebookClient,
+  clients: Set[FacebookPageClient],
   pollingSchedule: PollingSchedule,
   pollingWorkers: Int,
   storageLevel: StorageLevel
@@ -55,6 +56,6 @@ class FacebookInputDStream(
 
   override def getReceiver(): Receiver[FacebookPost] = {
     logDebug("Creating facebook receiver")
-    new FacebookReceiver(client, pollingSchedule, storageLevel, pollingWorkers)
+    new FacebookReceiver(clients, pollingSchedule, storageLevel, pollingWorkers)
   }
 }
