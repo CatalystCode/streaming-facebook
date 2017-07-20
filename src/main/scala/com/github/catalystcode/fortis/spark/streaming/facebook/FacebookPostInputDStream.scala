@@ -20,7 +20,7 @@ private class FacebookPostReceiver(
   @volatile private var lastIngestedDate: Option[Date] = None
 
   override protected def poll(): Unit = {
-    clients.foreach(_
+    clients.par.foreach(_
       .loadNewFacebookPosts(lastIngestedDate)
       .filter(x => {
         logDebug(s"Got facebook ${x.post.getPermalinkUrl} from page ${x.pageId} time ${x.post.getCreatedTime}")

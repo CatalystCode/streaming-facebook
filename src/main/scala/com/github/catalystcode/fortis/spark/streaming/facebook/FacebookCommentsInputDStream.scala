@@ -20,7 +20,7 @@ private class FacebookCommentsReceiver(
   @volatile private var lastIngestedDate: Option[Date] = None
 
   override protected def poll(): Unit = {
-    clients.foreach(_
+    clients.par.foreach(_
       .loadNewFacebookComments(lastIngestedDate)
       .filter(x => {
         logDebug(s"Got comment with id ${x.comment.getId} from page ${x.pageId}")
