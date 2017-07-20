@@ -6,6 +6,7 @@ import com.github.catalystcode.fortis.spark.streaming.facebook.client.FacebookPa
 class FacebookDemoStandalone(pageId: String, auth: FacebookAuth) {
   def run(): Unit = {
     val date = Some(new Date(new Date().getTime - 3600000 /* 1 hour */))
-    println(new FacebookPageClient(pageId, auth, Set("place", "comments", "message")).loadNewFacebooks(date).toList)
+    println(new FacebookPageClient(pageId, auth, Set("place", "comments", "message")).loadNewFacebookPosts(date).toList)
+    println(new FacebookPageClient(pageId, auth, Set("place", "comments", "message")).loadNewFacebookComments(date).toList)
   }
 }

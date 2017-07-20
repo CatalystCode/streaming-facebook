@@ -10,7 +10,7 @@ import org.apache.spark.streaming.StreamingContext
 import org.apache.spark.streaming.dstream.ReceiverInputDStream
 import org.apache.spark.streaming.receiver.Receiver
 
-private class FacebookReceiver(
+private class FacebookPostReceiver(
   clients: Set[FacebookPageClient],
   pollingSchedule: PollingSchedule,
   storageLevel: StorageLevel,
@@ -20,10 +20,10 @@ private class FacebookReceiver(
   @volatile private var lastIngestedDate: Option[Date] = None
 
   override protected def poll(): Unit = {
-    clients.foreach(_
-      .loadNewFacebooks(lastIngestedDate)
+    clients.par.foreach(_
+      .loadNewFacebookPosts(lastIngestedDate)
       .filter(x => {
-        logDebug(s"Got facebook ${x.post.getPermalinkUrl} from page ${x.pageId} time ${x.post.getCreatedTime} with ${x.comments.size} comments")
+        logDebug(s"Got facebook ${x.post.getPermalinkUrl} from page ${x.pageId} time ${x.post.getCreatedTime}")
         isNew(x)
       })
       .foreach(x => {
@@ -46,7 +46,7 @@ private class FacebookReceiver(
   }
 }
 
-class FacebookInputDStream(
+class FacebookPostInputDStream(
   ssc: StreamingContext,
   clients: Set[FacebookPageClient],
   pollingSchedule: PollingSchedule,
@@ -56,6 +56,6 @@ class FacebookInputDStream(
 
   override def getReceiver(): Receiver[FacebookPost] = {
     logDebug("Creating facebook receiver")
-    new FacebookReceiver(clients, pollingSchedule, storageLevel, pollingWorkers)
+    new FacebookPostReceiver(clients, pollingSchedule, storageLevel, pollingWorkers)
   }
 }
