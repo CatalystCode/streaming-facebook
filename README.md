@@ -16,10 +16,10 @@ export FACEBOOK_AUTH_TOKEN="..."
 sbt assembly
 
 # run locally
-java -cp target/scala-2.11/streaming-facebook-assembly-0.0.1.jar FacebookDemo standalone
+java -cp target/scala-2.11/streaming-facebook-assembly-0.0.3.jar FacebookDemo standalone
 
 # run on spark
-spark-submit --class FacebookDemo --master local[2] target/scala-2.11/streaming-facebook-assembly-0.0.1.jar spark
+spark-submit --class FacebookDemo --master local[2] target/scala-2.11/streaming-facebook-assembly-0.0.3.jar spark
 ```
 
 ## How does it work? ##
