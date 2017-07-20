@@ -9,7 +9,10 @@ class FacebookDemoSpark(pageIds: Set[String], auth: FacebookAuth) {
     val sc = new SparkContext(conf)
     val ssc = new StreamingContext(sc, Seconds(1))
 
-    FacebookUtils.createPageStreams(ssc, auth, pageIds).map(x => s"Post: ${x.post.getPermalinkUrl}").print()
+    val posts = FacebookUtils.createPageStreams(ssc, auth, pageIds).map(x => s"Post: ${x.post.getPermalinkUrl}")
+    val comments = FacebookUtils.createCommentsStreams(ssc, auth, pageIds).map(x => s"Comment: ${x.comment.getId}")
+
+    (posts union comments).print
 
     // run forever
     ssc.start()

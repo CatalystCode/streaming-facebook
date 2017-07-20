@@ -27,8 +27,9 @@ spark-submit --class FacebookDemo --master local[2] target/scala-2.11/streaming-
 Facebook doesn't expose a firehose API so we resort to polling. The FacebookReceiver pings the Facebook API every few
 seconds and pushes any new posts into Spark Streaming for further processing.
 
-Currently, the following ways to read images are supported:
+Currently, the following ways to read Facebook items are supported:
 - by page ([sample data](https://www.facebook.com/pg/aljazeera/posts/))
+- comments for page ([sample data](https://www.facebook.com/forbes/posts/10155598401707509?comment_id=10155598513972509))
 
 ## Release process ##
 
