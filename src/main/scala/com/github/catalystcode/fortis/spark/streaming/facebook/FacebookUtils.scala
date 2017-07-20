@@ -10,6 +10,26 @@ import org.apache.spark.streaming.StreamingContext
 import org.apache.spark.streaming.dstream.ReceiverInputDStream
 
 object FacebookUtils {
+  def createPageStreams(
+    ssc: StreamingContext,
+    auth: FacebookAuth,
+    pageIds: Set[String],
+    fields: Set[String] = Set("message", "place", "caption", "from", "name", "comments"),
+    pollingSchedule: PollingSchedule = PollingSchedule(30, TimeUnit.SECONDS),
+    pollingWorkers: Int = 1,
+    storageLevel: StorageLevel = StorageLevel.MEMORY_ONLY
+  ): ReceiverInputDStream[FacebookPost] = {
+    new FacebookInputDStream(
+      ssc = ssc,
+      clients = pageIds.map(pageId => new FacebookPageClient(
+        pageId = pageId,
+        auth = auth,
+        fields = fields)),
+      pollingSchedule = pollingSchedule,
+      pollingWorkers = pollingWorkers,
+      storageLevel = storageLevel)
+  }
+
   def createPageStream(
     ssc: StreamingContext,
     auth: FacebookAuth,
@@ -19,14 +39,6 @@ object FacebookUtils {
     pollingWorkers: Int = 1,
     storageLevel: StorageLevel = StorageLevel.MEMORY_ONLY
   ): ReceiverInputDStream[FacebookPost] = {
-    new FacebookInputDStream(
-      ssc = ssc,
-      client = new FacebookPageClient(
-        pageId = pageId,
-        auth = auth,
-        fields = fields),
-      pollingSchedule = pollingSchedule,
-      pollingWorkers = pollingWorkers,
-      storageLevel = storageLevel)
+    createPageStreams(ssc, auth, Set(pageId), fields, pollingSchedule, pollingWorkers, storageLevel)
   }
 }
