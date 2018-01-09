@@ -8,6 +8,8 @@ Run a demo via:
 
 ```sh
 # set up all the requisite environment variables
+# you can create a new app id and secret here: https://developers.facebook.com/quickstarts/
+# you can generate a new auth token here: https://developers.facebook.com/tools/accesstoken/
 export FACEBOOK_APP_ID="..."
 export FACEBOOK_APP_SECRET="..."
 export FACEBOOK_AUTH_TOKEN="..."
